@@ -1,0 +1,281 @@
+project:
+  name: "Supabase User Manager Library"
+  description: "TypeScript library for user authentication and profile management using Supabase, designed for vanilla JavaScript consumption"
+  version: "1.0.0"
+
+overview:
+  purpose: "Data-agnostic user management library for multiple projects"
+  target_environment: "Browser (vanilla JS consumption)"
+  distribution: "npm via GitHub"
+
+architecture:
+  principles:
+    - "Data Agnostic: No project-specific data handling"
+    - "Configuration-Based: Projects provide Supabase config"
+    - "Result-Based Error Handling: No thrown exceptions"
+    - "Interface-Only CRUD: Provides interfaces, not implementations"
+
+  structure:
+    src:
+      types:
+        - "user.ts: User interfaces and types"
+        - "auth.ts: Authentication types"
+        - "result.ts: Result wrapper types"
+      services:
+        - "auth.service.ts: Authentication operations"
+        - "user.service.ts: User profile operations"
+      core:
+        - "user-manager.ts: Main library class"
+      root:
+        - "index.ts: Public API exports"
+
+api_design:
+  configuration:
+    SupabaseConfig:
+      url: "string"
+      anonKey: "string"
+    UserManagerConfig:
+      supabase: "SupabaseConfig"
+
+  core_types:
+    User:
+      id: "string"
+      email: "string"
+      firstName: "string | optional"
+      lastName: "string | optional"
+      avatar: "string | optional"
+      emailVerified: "boolean"
+      createdAt: "string"
+      updatedAt: "string"
+
+    AuthSession:
+      user: "User"
+      accessToken: "string"
+      refreshToken: "string"
+      expiresAt: "number"
+
+    Result:
+      pattern: "Result<T, E = Error>"
+      success_case:
+        success: true
+        data: "T"
+      error_case:
+        success: false
+        error: "E"
+
+  main_class:
+    UserManager:
+      constructor: "UserManagerConfig"
+      methods:
+        authentication:
+          signUp:
+            params: ["email: string", "password: string"]
+            returns: "Promise<Result<{user: User; needsVerification: boolean}>>"
+          signIn:
+            params: ["email: string", "password: string"]
+            returns: "Promise<Result<{user: User; session: AuthSession}>>"
+          signOut:
+            params: []
+            returns: "Promise<Result<void>>"
+        profile_management:
+          updateProfile:
+            params: ["updates: Partial<Pick<User, 'firstName' | 'lastName' | 'avatar'>>"]
+            returns: "Promise<Result<User>>"
+          getCurrentUser:
+            params: []
+            returns: "Promise<Result<User | null>>"
+          getCurrentSession:
+            params: []
+            returns: "Promise<Result<AuthSession | null>>"
+        email_verification:
+          resendVerificationEmail:
+            params: []
+            returns: "Promise<Result<void>>"
+
+technical_decisions:
+  dependencies:
+    runtime:
+      - "@supabase/supabase-js: Supabase integration"
+    development:
+      - "typescript: Type safety and development"
+      - "vite: Building and bundling"
+
+  build_outputs:
+    - "ESM: Modern bundlers and browsers"
+    - "CJS: Node.js compatibility"
+    - "UMD: Direct browser usage"
+    - "TypeScript Declarations: Type support"
+
+  error_handling:
+    strategy: "Result pattern - no thrown exceptions"
+    example: |
+      const result = await userManager.signUp(email, password);
+      if (result.success) {
+        console.log("User created:", result.data.user);
+      } else {
+        console.error("Sign up failed:", result.error.message);
+      }
+
+  session_management:
+    - "Library handles session state internally"
+    - "Projects access via getCurrentSession()"
+    - "Automatic token refresh via Supabase client"
+
+implementation_phases:
+  phase_1:
+    name: "Core Infrastructure"
+    status: "pending"
+    tasks:
+      project_setup:
+        description: "Initialize TypeScript project with Vite"
+        status: "pending"
+        deliverables:
+          - "package.json configured for GitHub npm"
+          - "tsconfig.json for TypeScript compilation"
+          - "vite.config.ts for library building"
+          - "Multiple output formats (ESM, CJS, UMD)"
+      type_definitions:
+        description: "Create TypeScript interfaces and types"
+        status: "pending"
+        deliverables:
+          - "src/types/result.ts"
+          - "src/types/user.ts"
+          - "src/types/auth.ts"
+          - "Error type definitions"
+
+  phase_2:
+    name: "Authentication Service"
+    status: "pending"
+    tasks:
+      auth_service:
+        description: "Implement authentication operations"
+        status: "pending"
+        deliverables:
+          - "src/services/auth.service.ts"
+          - "Supabase client initialization"
+          - "Sign up with email verification"
+          - "Sign in functionality"
+          - "Sign out functionality"
+          - "Session management"
+
+  phase_3:
+    name: "User Profile Service"
+    status: "pending"
+    tasks:
+      profile_service:
+        description: "Implement profile management"
+        status: "pending"
+        deliverables:
+          - "src/services/user.service.ts"
+          - "Profile update functionality"
+          - "Current user retrieval"
+          - "Session state management"
+
+  phase_4:
+    name: "Main Library Class"
+    status: "pending"
+    tasks:
+      user_manager:
+        description: "Integrate services into main class"
+        status: "pending"
+        deliverables:
+          - "src/core/user-manager.ts"
+          - "Public API implementation"
+          - "Error handling and result wrapping"
+          - "Service integration"
+
+  phase_5:
+    name: "Build & Distribution"
+    status: "pending"
+    tasks:
+      build_config:
+        description: "Configure build system"
+        status: "pending"
+        deliverables:
+          - "Vite library mode configuration"
+          - "Multiple output format generation"
+          - "TypeScript declaration files"
+      package_config:
+        description: "Configure package for distribution"
+        status: "pending"
+        deliverables:
+          - "GitHub npm registry setup"
+          - "Module system exports configuration"
+          - "Peer dependencies configuration"
+
+validation_criteria:
+  functional:
+    - "All authentication flows work correctly"
+    - "Profile updates persist to Supabase"
+    - "Error handling returns proper Result objects"
+    - "Email verification flow works"
+  technical:
+    - "Library builds successfully for all target formats"
+    - "TypeScript types are properly exported"
+    - "Can be consumed by vanilla JavaScript projects"
+    - "Works with separate Supabase project configurations"
+  quality:
+    - "No runtime errors in target environments"
+    - "Proper tree-shaking support"
+    - "Clean API surface"
+
+usage_example: |
+  import {UserManager} from "@your-org/supabase-user-manager";
+
+  const userManager = new UserManager({
+    supabase: {
+      url: "your-supabase-url",
+      anonKey: "your-anon-key",
+    },
+  });
+
+  // Sign up
+  const signUpResult = await userManager.signUp("user@example.com", "password123");
+  if (signUpResult.success) {
+    if (signUpResult.data.needsVerification) {
+      console.log("Please check your email for verification");
+    }
+  }
+
+  // Sign in
+  const signInResult = await userManager.signIn("user@example.com", "password123");
+  if (signInResult.success) {
+    console.log("Signed in:", signInResult.data.user);
+  }
+
+  // Update profile
+  const updateResult = await userManager.updateProfile({
+    firstName: "John",
+    lastName: "Doe",
+    avatar: "https://example.com/avatar.jpg",
+  });
+
+progress_tracking:
+  current_phase: "phase_1"
+  current_task: "project_setup"
+  completed_steps: []
+  next_steps:
+    - "Initialize project structure"
+    - "Set up package.json and build configuration"
+    - "Create type definitions"
+
+  notes:
+    - "Technical specification completed and approved"
+    - "AI-friendly YAML management file created"
+    - "Ready to begin Phase 1 implementation"
+
+ai_management:
+  update_frequency: "After each atomic step completion"
+  tracking_fields:
+    - "progress_tracking.completed_steps"
+    - "implementation_phases.*.tasks.*.status"
+    - "progress_tracking.current_phase"
+    - "progress_tracking.current_task"
+    - "progress_tracking.notes"
+
+  maintenance_rules:
+    - "Update task status when deliverables are completed"
+    - "Add completion timestamps for completed tasks"
+    - "Track any deviations from original plan"
+    - "Note any architectural decisions or changes"
+    - "Maintain validation criteria checklist"
