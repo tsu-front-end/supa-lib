@@ -1,0 +1,40 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+## Context Health Assessment Protocol
+
+### Trigger Conditions:
+- Every 10 message exchanges
+- Before major decision points
+- When user requests context check
+- When I notice potential memory issues
+
+### Assessment Checklist:
+1. **Memory Test**: Can I recall the last 3 key decisions/agreements?
+2. **File Test**: Can I reference specific files read >5 exchanges ago?
+3. **Tool Test**: Do I remember results from previous searches?
+4. **Thread Test**: Am I consistent with conversation objectives?
+5. **Rule Test**: Am I still following established collaboration rules?
+
+### Reporting Format:
+**Context Health Status: [🟢 HEALTHY | 🟡 DEGRADING | 🔴 COMPROMISED]**
+
+**Assessment Details:**
+- Memory Span: [X exchanges back]
+- Key Information Retained: [List 3-5 critical items]
+- Information at Risk: [Items becoming unclear]
+- Recommended Actions: [Refresh strategies if needed]
+
+### Auto-Reporting Triggers:
+- When 2+ assessment criteria fail
+- When I catch myself asking for previously provided information
+- When I contradict earlier statements
+- When user shows signs of frustration with repeated questions
+
+### Proactive Measures:
+- Request context refresh when status becomes 🟡 DEGRADING
+- Suggest conversation chunking when status becomes 🔴 COMPROMISED
+- Offer to summarize key points for external documentation
+
