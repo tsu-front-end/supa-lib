@@ -6,7 +6,7 @@ project:
 overview:
   purpose: "Data-agnostic user management library for multiple projects"
   target_environment: "Browser (vanilla JS consumption)"
-  distribution: "npm via GitHub"
+  distribution: "npm via automated GitHub Actions"
 
 architecture:
   principles:
@@ -14,20 +14,30 @@ architecture:
     - "Configuration-Based: Projects provide Supabase config"
     - "Result-Based Error Handling: No thrown exceptions"
     - "Interface-Only CRUD: Provides interfaces, not implementations"
+    - "CI/CD Automated: GitHub Actions for publishing and documentation"
 
   structure:
     src:
       types:
-        - "user.ts: User interfaces and types"
-        - "auth.ts: Authentication types"
-        - "result.ts: Result wrapper types"
+        - "result.ts: Result wrapper types with helper functions"
+        - "user.ts: User interfaces and profile types"
+        - "auth.ts: Authentication and session types"
       services:
         - "auth.service.ts: Authentication operations"
         - "user.service.ts: User profile operations"
+        - "crud.service.ts: Generic CRUD operations"
       core:
         - "user-manager.ts: Main library class"
       root:
         - "index.ts: Public API exports"
+    github:
+      workflows:
+        - "publish.yml: Automated npm publishing on tag"
+        - "docs.yml: Automated documentation deployment"
+    docs:
+      - "Generated TypeDoc API documentation"
+    root:
+      - "README.md: User-facing documentation and quick start"
 
 api_design:
   configuration:
@@ -69,12 +79,15 @@ api_design:
       methods:
         authentication:
           signUp:
-            params: ["email: string", "password: string"]
+            params: ["email: string", "password: string", "profile?: ProfileData"]
             returns: "Promise<Result<{user: User; needsVerification: boolean}>>"
           signIn:
             params: ["email: string", "password: string"]
             returns: "Promise<Result<{user: User; session: AuthSession}>>"
           signOut:
+            params: []
+            returns: "Promise<Result<void>>"
+          resendVerificationEmail:
             params: []
             returns: "Promise<Result<void>>"
         profile_management:
@@ -87,27 +100,54 @@ api_design:
           getCurrentSession:
             params: []
             returns: "Promise<Result<AuthSession | null>>"
-        email_verification:
-          resendVerificationEmail:
-            params: []
+        crud_operations:
+          create:
+            params: ["table: string", "data: Record<string, any>"]
+            returns: "Promise<Result<any>>"
+          read:
+            params: ["table: string", "id: string"]
+            returns: "Promise<Result<any | null>>"
+          update:
+            params: ["table: string", "id: string", "data: Record<string, any>"]
+            returns: "Promise<Result<any>>"
+          delete:
+            params: ["table: string", "id: string"]
             returns: "Promise<Result<void>>"
+          list:
+            params: ["table: string", "filters?: Record<string, any>"]
+            returns: "Promise<Result<any[]>>"
+          listWithOptions:
+            params: ["table: string", "options: ListOptions"]
+            returns: "Promise<Result<any[]>>"
+          count:
+            params: ["table: string", "filters?: Record<string, any>"]
+            returns: "Promise<Result<number>>"
+          query:
+            params: ["table: string", "queryBuilder: (query: any) => any"]
+            returns: "Promise<Result<any[]>>"
 
 technical_decisions:
   dependencies:
     runtime:
-      - "@supabase/supabase-js: Supabase integration"
+      - "@supabase/supabase-js: Supabase integration (peer dependency)"
     development:
       - "typescript: Type safety and development"
       - "vite: Building and bundling"
+      - "vite-plugin-dts: TypeScript declaration generation"
+      - "typedoc: API documentation generation"
+      - "terser: Code minification"
 
   build_outputs:
-    - "ESM: Modern bundlers and browsers"
-    - "CJS: Node.js compatibility"
-    - "UMD: Direct browser usage"
-    - "TypeScript Declarations: Type support"
+    - "ESM: Modern bundlers and browsers (dist/index.js)"
+    - "CJS: Node.js compatibility (dist/index.cjs)"
+    - "UMD: Direct browser usage (dist/index.umd.js)"
+    - "TypeScript Declarations: Type support (dist/index.d.ts)"
 
   error_handling:
     strategy: "Result pattern - no thrown exceptions"
+    types:
+      - "AuthError with AuthErrorType enum"
+      - "CrudError with CrudErrorType enum"
     example: |
       const result = await userManager.signUp(email, password);
       if (result.success) {
@@ -121,87 +161,236 @@ technical_decisions:
     - "Projects access via getCurrentSession()"
     - "Automatic token refresh via Supabase client"
 
+  ci_cd_strategy:
+    publishing:
+      - "GitHub Actions workflow triggered by version tags"
+      - "Automated npm publishing with provenance"
+      - "Automatic GitHub release creation"
+    documentation:
+      - "TypeDoc generation and GitHub Pages deployment"
+      - "Automatic updates on main branch changes"
+
 implementation_phases:
   phase_1:
-    name: "Core Infrastructure"
+    name: "Project Foundation"
     status: "pending"
     tasks:
       project_setup:
-        description: "Initialize TypeScript project with Vite"
+        description: "Initialize TypeScript project with Vite and tooling"
         status: "pending"
         deliverables:
-          - "package.json configured for GitHub npm"
+          - "package.json configured for GitHub npm publishing"
           - "tsconfig.json for TypeScript compilation"
-          - "vite.config.ts for library building"
-          - "Multiple output formats (ESM, CJS, UMD)"
-      type_definitions:
-        description: "Create TypeScript interfaces and types"
+          - "vite.config.ts for library building with multiple formats"
+          - "typedoc.json for API documentation generation"
+          - "src/ directory structure creation"
+          - "Install required dependencies including terser"
+      repository_setup:
+        description: "Configure repository metadata and placeholders"
         status: "pending"
         deliverables:
-          - "src/types/result.ts"
-          - "src/types/user.ts"
-          - "src/types/auth.ts"
-          - "Error type definitions"
+          - "Update package.json with correct repository URLs"
+          - "Set author information"
+          - "Configure npm registry settings"
 
   phase_2:
+    name: "Type System Foundation"
+    status: "pending"
+    tasks:
+      result_types:
+        description: "Create Result pattern types and utilities"
+        status: "pending"
+        deliverables:
+          - "src/types/result.ts with Result<T, E> pattern"
+          - "Success and Failure interfaces"
+          - "Helper functions: createSuccess, createFailure"
+          - "Type guards: isSuccess, isFailure"
+      user_types:
+        description: "Create user-related type definitions"
+        status: "pending"
+        deliverables:
+          - "src/types/user.ts with User interface"
+          - "UserProfileUpdate type for profile modifications"
+          - "UserSignUpData and UserSignInData interfaces"
+      auth_types:
+        description: "Create authentication and configuration types"
+        status: "pending"
+        deliverables:
+          - "src/types/auth.ts with AuthSession interface"
+          - "SupabaseConfig and UserManagerConfig interfaces"
+          - "SignUpResult and SignInResult interfaces"
+          - "AuthError interface and AuthErrorType enum"
+
+  phase_3:
     name: "Authentication Service"
     status: "pending"
     tasks:
       auth_service:
-        description: "Implement authentication operations"
+        description: "Implement complete authentication service"
         status: "pending"
         deliverables:
-          - "src/services/auth.service.ts"
-          - "Supabase client initialization"
-          - "Sign up with email verification"
-          - "Sign in functionality"
-          - "Sign out functionality"
-          - "Session management"
-
-  phase_3:
-    name: "User Profile Service"
-    status: "pending"
-    tasks:
-      profile_service:
-        description: "Implement profile management"
-        status: "pending"
-        deliverables:
-          - "src/services/user.service.ts"
-          - "Profile update functionality"
-          - "Current user retrieval"
-          - "Session state management"
+          - "src/services/auth.service.ts with AuthService class"
+          - "Supabase client initialization and configuration"
+          - "signUp method with email verification and profile support"
+          - "signIn method with session management"
+          - "signOut method with proper cleanup"
+          - "getCurrentUser and getCurrentSession methods"
+          - "resendVerificationEmail functionality"
+          - "Comprehensive error mapping from Supabase to AuthError"
+          - "User data mapping from Supabase format to User interface"
 
   phase_4:
-    name: "Main Library Class"
+    name: "Profile Management Service"
+    status: "pending"
+    tasks:
+      user_service:
+        description: "Implement user profile management service"
+        status: "pending"
+        deliverables:
+          - "src/services/user.service.ts with UserService class"
+          - "updateProfile method with metadata merging"
+          - "getCurrentUser method with authentication checks"
+          - "refreshCurrentUser method for data synchronization"
+          - "Convenience methods: updateAvatar, updateName"
+          - "clearProfileFields method for field removal"
+          - "Proper error handling and user data mapping"
+
+  phase_5:
+    name: "Generic CRUD Service"
+    status: "pending"
+    tasks:
+      crud_service:
+        description: "Implement data-agnostic CRUD operations"
+        status: "pending"
+        deliverables:
+          - "src/services/crud.service.ts with CrudService class"
+          - "Generic create, read, update, delete operations"
+          - "Advanced list method with filtering and pagination"
+          - "count method for record counting"
+          - "query method for custom Supabase queries"
+          - "ListOptions interface for advanced querying"
+          - "CrudError interface and CrudErrorType enum"
+          - "Comprehensive database error mapping"
+          - "Support for wildcard filtering and complex queries"
+
+  phase_6:
+    name: "Main Library Integration"
     status: "pending"
     tasks:
       user_manager:
-        description: "Integrate services into main class"
+        description: "Create main UserManager class integrating all services"
         status: "pending"
         deliverables:
-          - "src/core/user-manager.ts"
-          - "Public API implementation"
-          - "Error handling and result wrapping"
-          - "Service integration"
+          - "src/core/user-manager.ts with UserManager class"
+          - "Service integration and dependency injection"
+          - "Public API methods matching specification exactly"
+          - "Authentication methods: signUp, signIn, signOut, resendVerificationEmail"
+          - "Profile methods: updateProfile, getCurrentUser, getCurrentSession"
+          - "CRUD methods: create, read, update, delete, list"
+          - "Advanced CRUD methods: listWithOptions, count, query"
+          - "Comprehensive TSDoc documentation with examples"
+          - "Error handling delegation to appropriate services"
 
-  phase_5:
-    name: "Build & Distribution"
+  phase_7:
+    name: "Public API and Exports"
     status: "pending"
     tasks:
-      build_config:
-        description: "Configure build system"
+      api_exports:
+        description: "Create clean public API with organized exports"
         status: "pending"
         deliverables:
-          - "Vite library mode configuration"
-          - "Multiple output format generation"
-          - "TypeScript declaration files"
-      package_config:
-        description: "Configure package for distribution"
+          - "src/index.ts as main entry point"
+          - "Export UserManager as primary class"
+          - "Export all core types and interfaces"
+          - "Export utility functions and type guards"
+          - "Export service classes for advanced usage"
+          - "Export error types and enums"
+          - "Library metadata exports (version, name)"
+          - "Default export for convenience"
+          - "Comprehensive package documentation"
+
+  phase_8:
+    name: "Documentation and User Guides"
+    status: "pending"
+    tasks:
+      readme_creation:
+        description: "Create comprehensive README for users"
         status: "pending"
         deliverables:
-          - "GitHub npm registry setup"
-          - "Module system exports configuration"
-          - "Peer dependencies configuration"
+          - "README.md with project overview and features"
+          - "Installation instructions"
+          - "Quick start guide with working examples"
+          - "Vanilla JavaScript usage examples"
+          - "Result pattern explanation and examples"
+          - "Configuration guide with environment variables"
+          - "Core concepts documentation"
+          - "Real-world usage examples (social links, transactions)"
+          - "Error handling patterns and examples"
+          - "TypeScript integration guide"
+          - "Development setup instructions"
+          - "Links to TypeDoc API documentation"
+      typedoc_setup:
+        description: "Configure and test TypeDoc documentation generation"
+        status: "pending"
+        deliverables:
+          - "Verify typedoc.json configuration"
+          - "Test documentation generation with npm run docs"
+          - "Ensure all TSDoc comments render properly"
+          - "Verify examples and code snippets display correctly"
+          - "Confirm organized categorization of API elements"
+
+  phase_9:
+    name: "Build System and Quality Assurance"
+    status: "pending"
+    tasks:
+      build_testing:
+        description: "Test and validate build system"
+        status: "pending"
+        deliverables:
+          - "Install missing dependencies (terser)"
+          - "Test build process with npm run build"
+          - "Verify all output formats generate correctly (ESM, CJS, UMD)"
+          - "Confirm TypeScript declarations are generated"
+          - "Validate source maps are created"
+          - "Check bundle sizes and compression"
+          - "Test package contents with npm pack --dry-run"
+      quality_checks:
+        description: "Implement quality assurance measures"
+        status: "pending"
+        deliverables:
+          - "Type checking with npm run type-check"
+          - "Verify no TypeScript errors"
+          - "Confirm all imports resolve correctly"
+          - "Validate package.json configuration"
+          - "Test documentation generation"
+
+  phase_10:
+    name: "CI/CD and Automation"
+    status: "pending"
+    tasks:
+      github_workflows:
+        description: "Create GitHub Actions workflows for automation"
+        status: "pending"
+        deliverables:
+          - ".github/workflows/publish.yml for automated npm publishing"
+          - "Trigger on version tag pushes (v*)"
+          - "Quality checks: type-check, build, docs generation"
+          - "Package verification with dry-run"
+          - "Secure npm publishing with NPM_TOKEN secret"
+          - "npm provenance for supply chain security"
+          - "Automatic GitHub release creation with changelog"
+          - ".github/workflows/docs.yml for documentation deployment"
+          - "Automatic TypeDoc generation and GitHub Pages deployment"
+          - "Trigger on main branch updates and manual dispatch"
+      deployment_setup:
+        description: "Configure deployment and publishing infrastructure"
+        status: "pending"
+        deliverables:
+          - "GitHub repository secrets configuration guide"
+          - "NPM_TOKEN setup instructions"
+          - "GitHub Pages configuration guide"
+          - "Version tagging and release process documentation"
+          - "CI/CD workflow testing and validation"
 
 validation_criteria:
   functional:
@@ -209,18 +398,31 @@ validation_criteria:
     - "Profile updates persist to Supabase"
     - "Error handling returns proper Result objects"
     - "Email verification flow works"
+    - "CRUD operations work with any table structure"
+    - "Advanced filtering and pagination function correctly"
   technical:
     - "Library builds successfully for all target formats"
     - "TypeScript types are properly exported"
     - "Can be consumed by vanilla JavaScript projects"
     - "Works with separate Supabase project configurations"
+    - "GitHub Actions workflows execute successfully"
+    - "Documentation deploys automatically to GitHub Pages"
   quality:
     - "No runtime errors in target environments"
     - "Proper tree-shaking support"
-    - "Clean API surface"
+    - "Clean API surface with comprehensive documentation"
+    - "Automated publishing works reliably"
+    - "Bundle sizes are reasonable and optimized"
+  documentation:
+    - "Complete API reference documentation via TypeDoc"
+    - "Clear usage examples for all methods"
+    - "Quick start guide with working examples"
+    - "TypeScript intellisense support"
+    - "Comprehensive README with real-world examples"
+    - "Automated documentation deployment"
 
 usage_example: |
-  import {UserManager} from "@your-org/supabase-user-manager";
+  import {UserManager} from "supabase-user-manager";
 
   const userManager = new UserManager({
     supabase: {
@@ -250,19 +452,97 @@ usage_example: |
     avatar: "https://example.com/avatar.jpg",
   });
 
+  // CRUD operations
+  const createResult = await userManager.create("social_links", {
+    user_id: signInResult.data.user.id,
+    platform: "twitter",
+    url: "https://twitter.com/username",
+  });
+
 progress_tracking:
   current_phase: "phase_1"
   current_task: "project_setup"
   completed_steps: []
   next_steps:
-    - "Initialize project structure"
-    - "Set up package.json and build configuration"
-    - "Create type definitions"
+    - "Initialize TypeScript project with Vite"
+    - "Configure package.json for npm publishing"
+    - "Set up development tooling and dependencies"
 
   notes:
-    - "Technical specification completed and approved"
-    - "AI-friendly YAML management file created"
-    - "Ready to begin Phase 1 implementation"
+    - "Complete project plan created from successful implementation"
+    - "Includes all lessons learned and best practices"
+    - "GitHub Actions workflows for automated publishing and docs"
+    - "Comprehensive documentation strategy with README + TypeDoc"
+    - "Ready for atomic step-by-step implementation"
+    - "Package name: supabase-user-manager"
+    - "Author: @alsandre"
+    - "Repository: tsu-front-end/supa-lib"
+
+documentation_structure:
+  readme:
+    purpose: "User-facing quick start and overview documentation"
+    sections:
+      - "Project overview and features"
+      - "Installation instructions"
+      - "Quick start with working examples"
+      - "Vanilla JavaScript usage"
+      - "Result pattern explanation"
+      - "Configuration guide"
+      - "Core concepts overview"
+      - "Real-world examples"
+      - "Error handling patterns"
+      - "TypeScript integration"
+      - "Development setup"
+
+  typedoc:
+    purpose: "Complete API reference documentation"
+    generation: "Automated from TSDoc comments"
+    deployment: "GitHub Pages via GitHub Actions"
+    sections:
+      - "UserManager class overview"
+      - "Authentication methods"
+      - "Profile management methods"
+      - "CRUD operations"
+      - "Configuration interfaces"
+      - "Result types and error handling"
+      - "Service classes for advanced usage"
+
+  code_examples:
+    format: "Runnable TypeScript examples"
+    coverage:
+      - "All public methods with parameters and return types"
+      - "Common use cases and patterns"
+      - "Error scenarios and handling"
+      - "Integration patterns for different project types"
+
+ci_cd_strategy:
+  publishing_workflow:
+    trigger: "Version tag push (v*)"
+    steps:
+      - "Checkout code"
+      - "Setup Node.js with npm cache"
+      - "Install dependencies with npm ci"
+      - "Run type checking"
+      - "Build library for all formats"
+      - "Generate documentation"
+      - "Verify package contents"
+      - "Publish to npm with provenance"
+      - "Create GitHub release with changelog"
+
+  documentation_workflow:
+    trigger: "Push to main branch or manual dispatch"
+    steps:
+      - "Checkout code"
+      - "Setup Node.js with npm cache"
+      - "Install dependencies"
+      - "Generate TypeDoc documentation"
+      - "Deploy to GitHub Pages"
+
+  security:
+    - "NPM_TOKEN stored in GitHub secrets"
+    - "npm provenance for supply chain security"
+    - "Automated dependency updates"
+    - "No manual publishing steps required"
 
 ai_management:
   update_frequency: "After each atomic step completion"
@@ -279,3 +559,27 @@ ai_management:
     - "Track any deviations from original plan"
     - "Note any architectural decisions or changes"
     - "Maintain validation criteria checklist"
+    - "Document lessons learned for future implementations"
+
+final_deliverables:
+  code:
+    - "Complete TypeScript library with full type safety"
+    - "Multiple build formats (ESM, CJS, UMD)"
+    - "Comprehensive error handling with Result pattern"
+    - "Data-agnostic CRUD operations"
+    - "Authentication and profile management"
+
+  documentation:
+    - "User-friendly README with examples"
+    - "Complete API documentation via TypeDoc"
+    - "Automated documentation deployment"
+
+  automation:
+    - "GitHub Actions for automated publishing"
+    - "GitHub Actions for documentation deployment"
+    - "Version-based release management"
+
+  distribution:
+    - "npm package ready for installation"
+    - "GitHub repository with complete source"
+    - "Public API documentation website"
