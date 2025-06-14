@@ -30,6 +30,7 @@ export default defineConfig({
     rollupOptions: {
       external: ["@supabase/supabase-js"],
       output: {
+        exports: "named",
         globals: {
           "@supabase/supabase-js": "Supabase",
         },

@@ -19,6 +19,3 @@ export {CrudService} from "./services/crud.service";
 
 // Library metadata
 export const version = "1.0.0";
-
-// Default export for convenience
-export {ServiceManager as default} from "./core/service-manager";
