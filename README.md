@@ -486,7 +486,15 @@ const handleSignIn = async (email: string, password: string): Promise<User | nul
 };
 ```
 
-## Development
+## Development & CI/CD
+
+This library includes automated workflows for quality assurance and publishing:
+
+- **Continuous Integration**: Automated testing on multiple Node.js versions
+- **Automated Publishing**: NPM releases triggered by GitHub releases
+- **Documentation Deployment**: Automatic TypeDoc deployment to GitHub Pages
+
+For setup instructions, see [`.github/SETUP.md`](.github/SETUP.md).
 
 ### Building the Library
 
