@@ -2,7 +2,7 @@
   "entryPoints": ["src/index.ts"],
   "out": "docs",
   "theme": "default",
-  "name": "Supabase User Manager",
+  "name": "Supabase Service Manager",
   "includeVersion": true,
   "excludePrivate": true,
   "excludeProtected": true,

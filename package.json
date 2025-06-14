@@ -1,7 +1,7 @@
 {
-  "name": "supabase-user-manager",
+  "name": "supabase-service-manager",
   "version": "1.0.0",
-  "description": "TypeScript library for user authentication and profile management using Supabase, designed for vanilla JavaScript consumption",
+  "description": "TypeScript library for user authentication, profile management, and basic CRUD operations using Supabase, designed for vanilla JavaScript consumption",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,6 +26,9 @@
     "supabase",
     "authentication",
     "user-management",
+    "crud-operations",
+    "database",
+    "service-manager",
     "typescript",
     "vanilla-js",
     "library"

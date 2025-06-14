@@ -16,9 +16,9 @@ export interface SupabaseConfig {
 }
 
 /**
- * User Manager configuration
+ * Service Manager configuration
  */
-export interface UserManagerConfig {
+export interface ServiceManagerConfig {
   /** Supabase configuration */
   supabase: SupabaseConfig;
 }
