@@ -1,0 +1,55 @@
+{
+  "name": "supabase-user-manager",
+  "version": "1.0.0",
+  "description": "TypeScript library for user authentication and profile management using Supabase, designed for vanilla JavaScript consumption",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "type-check": "tsc --noEmit",
+    "docs": "typedoc",
+    "dev": "vite build --watch",
+    "prepublishOnly": "npm run type-check && npm run build"
+  },
+  "keywords": [
+    "supabase",
+    "authentication",
+    "user-management",
+    "typescript",
+    "vanilla-js",
+    "library"
+  ],
+  "author": "@alsandre",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tsu-front-end/supa-lib.git"
+  },
+  "homepage": "https://github.com/tsu-front-end/supa-lib#readme",
+  "bugs": {
+    "url": "https://github.com/tsu-front-end/supa-lib/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "vite-plugin-dts": "^3.7.0",
+    "typedoc": "^0.25.7"
+  }
+}
