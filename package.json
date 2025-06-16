@@ -44,7 +44,7 @@
     "url": "https://github.com/tsu-front-end/supa-lib/issues"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0"
