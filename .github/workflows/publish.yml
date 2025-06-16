@@ -54,20 +54,23 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const { data: release } = await github.rest.repos.getReleaseByTag({
+            const tagName = context.ref.replace('refs/tags/', '');
+            const version = tagName.replace('v', '');
+
+            console.log(`Published version ${tagName} to NPM`);
+
+            // Create a commit comment instead of release comment
+            const commit = await github.rest.repos.getCommit({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag: context.ref.replace('refs/tags/', '')
+              ref: tagName
             });
 
-            console.log(`Published version ${release.tag_name} to NPM`);
-
-            // Add comment to release
-            await github.rest.repos.createReleaseComment({
+            await github.rest.repos.createCommitComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              release_id: release.id,
-              body: `🚀 Successfully published to NPM!\n\nInstall with: \`npm install supabase-service-manager@${release.tag_name.replace('v', '')}\``
+              commit_sha: commit.data.sha,
+              body: `🚀 Successfully published to NPM!\n\nTag: \`${tagName}\`\nInstall with: \`npm install supabase-service-manager@${version}\``
             });
 
   deploy-docs:
